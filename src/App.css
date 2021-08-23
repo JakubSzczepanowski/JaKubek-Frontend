@@ -38,3 +38,28 @@
 .carousel-item-right {
   transform: translateX(100%);
 }
+
+.better-form {
+  margin-top: 50px;
+  padding-left: 250px;
+}
+
+.form-inline {
+  width: 100%;
+}
+
+.form-group {
+  width: 90%;
+}
+
+.input-group {
+  width: 90% !important;
+}
+
+.form-control {
+  width: 80% !important;
+}
+
+span.input-group-addon {
+  width: 80px !important;
+}

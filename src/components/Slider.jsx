@@ -1,17 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import ReactDom from "react-dom";
-import {
-  Carousel,
-  Button,
-  ButtonGroup,
-  ButtonToolbar,
-  Col,
-  Container,
-  Row,
-} from "react-bootstrap";
+import { Carousel, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
+import { Link } from "react-router-dom";
 
 const Slider = () => {
   const [index, setIndex] = useState(0);
@@ -33,9 +26,11 @@ const Slider = () => {
             <Container id="slider">
               <span id="main-title">Dołącz teraz</span>
               <p>Publikuj swoje pliki i dziel się z innymi</p>
-              <button type="button" class="btn btn-primary btn-lg">
-                Dołącz
-              </button>
+              <Link to="/register">
+                <button type="button" className="btn btn-primary btn-lg">
+                  Dołącz
+                </button>
+              </Link>
             </Container>
           </Carousel.Caption>
         </Carousel.Item>
