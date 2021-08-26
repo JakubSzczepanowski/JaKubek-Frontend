@@ -9,19 +9,46 @@ const RegisterForm = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (password !== confirmPassword) {
-      setConfirmPasswordError("Hasła muszą być identyczne");
-    } else setConfirmPasswordError("");
+      setErrorMessage("Hasła muszą być identyczne");
+    } else setErrorMessage("");
   }, [confirmPassword]);
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
+    event.preventDefault();
     if (form.checkValidity() === false || password !== confirmPassword) {
-      event.preventDefault();
       event.stopPropagation();
+    } else {
+      fetch("https://localhost:5001/api/account/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          login: login,
+          password: password,
+          confirmPassword: confirmPassword,
+        }),
+      })
+        .then(async (response) => {
+          if (response.ok) {
+            return response.text();
+          } else {
+            if (response.status === 400) {
+              const data = await response.json();
+              throw new Error(data.errors.Login[0]);
+            }
+            throw new Error("Coś poszło nie tak");
+          }
+        })
+        .then((data) => setErrorMessage(data))
+        .catch((error) => {
+          setErrorMessage(error.message);
+        });
     }
     setValidated(true);
   };
@@ -72,7 +99,7 @@ const RegisterForm = () => {
           <Form.Control.Feedback type="invalid">
             Minimalna liczba znaków dla hasła to 6
           </Form.Control.Feedback>
-          <div class="error-message">{confirmPasswordError}</div>
+          <div className="error-message">{errorMessage}</div>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Check>
