@@ -1,14 +1,16 @@
 import React from "react";
 import { Form, Container, Button } from "react-bootstrap";
+import { Route, Redirect } from "react-router-dom";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
-const LoginForm = () => {
+const LoginForm = (props) => {
   const [validated, setValidated] = useState(false);
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -22,6 +24,7 @@ const LoginForm = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           login: login,
           password: password,
@@ -29,24 +32,28 @@ const LoginForm = () => {
       })
         .then(async (response) => {
           if (response.ok) {
-            return response.text();
+            props.setIsAuthenticated(true);
+            setIsLoading(false);
           } else {
             if (response.status === 400) {
               const data = await response.text();
+              setIsLoading(false);
               throw new Error(data);
             }
+            setIsLoading(false);
             throw new Error("Coś poszło nie tak");
           }
         })
-        .then((data) => localStorage.setItem("token", data))
         .catch((error) => {
           setErrorMessage(error.message);
         });
     }
     setValidated(true);
   };
+
   return (
     <Container className="better-form">
+      {isLoading && <div>Loading...</div>}
       <h1>Zaloguj się</h1>
       <br />
       <Form noValidate validated={validated} onSubmit={handleSubmit}>

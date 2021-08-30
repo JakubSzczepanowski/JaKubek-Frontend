@@ -70,3 +70,25 @@ span.input-group-addon {
   font-size: 0.875em;
   color: #dc3545;
 }
+
+.navbar-button {
+  background-color: #d2f7cd;
+  color: black;
+  padding: 20px 40px;
+  text-align: center;
+  font-size: 24px;
+  transition-duration: 0.4s;
+}
+
+.navbar-button:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
+.link-decoration-none {
+  text-decoration: none !important;
+}
+
+.welcome-margin {
+  margin-top: 20px;
+}

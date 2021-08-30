@@ -12,7 +12,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 import logo from "../logo.png";
 
-const HeaderBar = () => {
+const HeaderBar = ({ mode }) => {
   return (
     <Container>
       <header>
@@ -24,16 +24,26 @@ const HeaderBar = () => {
           </Col>
           <Col md="6">
             <ButtonToolbar className="mt-4 me-2 float-end">
-              <ButtonGroup className="me-2">
-                <Link to="/register">
-                  <Button variant="outline-secondary">Zarejestruj się</Button>
+              {!mode ? (
+                <>
+                  <ButtonGroup className="me-2">
+                    <Link to="/register">
+                      <Button variant="outline-secondary">
+                        Zarejestruj się
+                      </Button>
+                    </Link>
+                  </ButtonGroup>
+                  <ButtonGroup>
+                    <Link to="/login">
+                      <Button variant="primary">Zaloguj się</Button>
+                    </Link>
+                  </ButtonGroup>
+                </>
+              ) : (
+                <Link to="/logout">
+                  <Button variant="outline-secondary">Wyloguj</Button>
                 </Link>
-              </ButtonGroup>
-              <ButtonGroup>
-                <Link to="/login">
-                  <Button variant="primary">Zaloguj się</Button>
-                </Link>
-              </ButtonGroup>
+              )}
             </ButtonToolbar>
           </Col>
         </Row>
