@@ -31,10 +31,10 @@ function App() {
       .then(async (response) => {
         if(response.ok) {
           const data = await response.json();
+          setIsAuthenticated(true);
           setName(data.login);
           setRole(data.role);
           setIsLoading(false);
-          setIsAuthenticated(true);
         }
         else {
           setIsAuthenticated(false);
@@ -48,23 +48,27 @@ function App() {
     return (
       <Router>
         <HeaderBar mode={isAuthenticated}/>
-        {isLoading && <div>Loading...</div>}
+        
         <Switch>
+        {isLoading ? <div>Loading...</div> : 
+        <>
         <Route exact path="/">
-          {!isAuthenticated ?
-            <Slider />
-            :  <>
-            <NavBar />
-            </>}
-            </Route>
-          <Route path="/register">
-            <RegisterForm />
+        {!isAuthenticated ?
+          <Slider />
+          :  <>
+          <NavBar />
+          </>}
           </Route>
-          <UnauthenticatedRoute path="/login" component={LoginForm} appProps={{isAuthenticated, setIsAuthenticated}}/>
-          <AuthenticatedRoute path="/profile" component={Profile} appProps={{ isAuthenticated,name,role }}/>
-          <Route path="/logout">
-            <Logout setMode={setIsAuthenticated} setName={setName} setRole={setRole}/>
-          </Route>
+        <Route path="/register">
+          <RegisterForm />
+        </Route>
+        <UnauthenticatedRoute path="/login" component={LoginForm} appProps={{isAuthenticated, setIsAuthenticated}}/>
+        <AuthenticatedRoute path="/profile" component={Profile} appProps={{ isAuthenticated,name,role }}/>
+        <Route path="/logout">
+          <Logout setMode={setIsAuthenticated} setName={setName} setRole={setRole}/>
+        </Route>
+        </>
+        }
         </Switch>
       </Router>
     );

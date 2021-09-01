@@ -71,6 +71,13 @@ span.input-group-addon {
   color: #dc3545;
 }
 
+.success-message {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #067c10;
+}
+
 .navbar-button {
   background-color: #d2f7cd;
   color: black;
@@ -91,4 +98,45 @@ span.input-group-addon {
 
 .welcome-margin {
   margin-top: 20px;
+}
+
+.custom-file-input {
+  color: rgb(240, 236, 229);
+  background-color: rgb(28, 30, 31);
+  border-color: rgb(69, 75, 78);
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0.25rem;
+}
+
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition-duration: 0.4s;
+}
+.custom-file-upload:hover {
+  background-color: #212529;
+  color: white;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+#custom-file-filename {
+  margin-left: 10px;
+  display: inline-block;
 }
