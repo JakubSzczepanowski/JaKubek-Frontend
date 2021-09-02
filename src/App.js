@@ -10,6 +10,7 @@ import Profile from "./components/Profile";
 import NavBar from "./components/NavBar";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
+import FilesList from "./components/FilesList";
 import Logout from "./components/Logout";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -20,11 +21,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('useEffect')
     checkAuthentication();
-  },[isAuthenticated]);
+  },[]);
 
-  function checkAuthentication() {
-    fetch("https://localhost:5001/api/account/user", {
+  async function checkAuthentication() {
+    await fetch("https://localhost:5001/api/account/user", {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
     })
@@ -34,7 +36,6 @@ function App() {
           setIsAuthenticated(true);
           setName(data.login);
           setRole(data.role);
-          setIsLoading(false);
         }
         else {
           setIsAuthenticated(false);
@@ -43,34 +44,41 @@ function App() {
       .catch((error) => {
         setIsAuthenticated(false);
       });
+      setIsLoading(false);
+      console.log('Zmieniono loading czyli powinny się wyrenderować routey')
   }
 
+  function RenderRouter() {
     return (
       <Router>
         <HeaderBar mode={isAuthenticated}/>
         
         <Switch>
-        {isLoading ? <div>Loading...</div> : 
-        <>
+        
         <Route exact path="/">
         {!isAuthenticated ?
           <Slider />
           :  <>
           <NavBar />
+          <FilesList />
           </>}
           </Route>
-        <Route path="/register">
-          <RegisterForm />
-        </Route>
+        <UnauthenticatedRoute path="/register" component={RegisterForm} appProps={{isAuthenticated}} />
         <UnauthenticatedRoute path="/login" component={LoginForm} appProps={{isAuthenticated, setIsAuthenticated}}/>
         <AuthenticatedRoute path="/profile" component={Profile} appProps={{ isAuthenticated,name,role }}/>
         <Route path="/logout">
           <Logout setMode={setIsAuthenticated} setName={setName} setRole={setRole}/>
         </Route>
-        </>
-        }
+        
         </Switch>
       </Router>
+    );
+  }
+
+    return (<>
+      {isLoading ? <div>Loading...</div> : 
+      RenderRouter()
+    }</>
     );
 }
 
