@@ -15,36 +15,41 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Image from "react-bootstrap/Image";
 import DefaultProfileIcon from "../profile.svg";
 import Card from "react-bootstrap/Card";
-import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Profile = (props) => {
-  const [filename, setFilename] = useState("");
-  const [file, setFile] = useState(null);
-  const [isLoading, setLoading] = useState(false);
-  const [userName, setUsername] = useState("");
-  const [description, setDescription] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+class Profile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filename: "",
+      file: null,
+      isLoading: false,
+      userName: "",
+      description: "",
+      errorMessage: "",
+      successMessage: "",
+    };
+  }
 
-  const handleChange = (event) => {
+  handleChange = (event) => {
     if (event.target.files[0]) {
-      setFilename(event.target.files[0].name);
-      setFile(event.target.files[0]);
+      this.setState({ filename: event.target.files[0].name });
+      this.setState({ file: event.target.files[0] });
     }
   };
 
-  const handleSubmit = async (event) => {
-    await setLoading(true);
+  handleSubmit = async (event) => {
+    await this.setState({ isLoading: true });
     event.preventDefault();
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", this.state.file);
     formData.append(
       "jsonString",
       JSON.stringify({
-        filename: filename,
-        name: userName,
-        description: description,
+        filename: this.state.filename,
+        name: this.state.userName,
+        description: this.state.description,
       })
     );
     axios
@@ -55,9 +60,9 @@ const Profile = (props) => {
         withCredentials: true,
       })
       .then(async (response) => {
-        setLoading(false);
+        this.setState({ isLoading: false });
         if (response.request.status === 200) {
-          setSuccessMessage(response.data.message);
+          this.setState({ successMessage: response.data.message });
         } else {
           if (response.request.status === 400) {
             const data = await response.text();
@@ -67,78 +72,102 @@ const Profile = (props) => {
         }
       })
       .catch((error) => {
-        setErrorMessage(error.message);
+        this.setState({ errorMessage: error.message });
       });
   };
-  return (
-    <>
-      <NavBar />
-      <Container className="welcome-margin">
-        <Row>
-          <Col lg={2}>
-            <Card style={{ width: "13rem" }}>
-              <Card.Img variant="top" src={DefaultProfileIcon} roundedCircle />
-              <Card.Body>
-                <Card.Title>{props.name}</Card.Title>
-                <Card.Text>{props.role}</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
 
-          <Col lg={10}>
-            <Form onSubmit={handleSubmit}>
-              <Card style={{ width: "100%", height: "100%" }}>
+  render() {
+    return (
+      <>
+        <NavBar />
+        <Container className="welcome-margin">
+          <Row>
+            <Col lg={2}>
+              <Card style={{ width: "13rem" }}>
+                <Card.Img
+                  variant="top"
+                  src={DefaultProfileIcon}
+                  roundedCircle
+                />
                 <Card.Body>
-                  Wybierz plik, którym chcesz się podzielić
-                  <div className="custom-file-input">
-                    <label className="custom-file-upload" htmlFor="file-upload">
-                      Wybierz plik
-                    </label>
-                    <input
-                      type="file"
-                      id="file-upload"
-                      onChange={handleChange}
-                    />
-                    <div id="custom-file-filename">{filename}</div>
-                  </div>
+                  <Card.Title>{this.props.name}</Card.Title>
+                  <Card.Text>{this.props.role}</Card.Text>
                 </Card.Body>
-                <InputGroup className="mb-3">
-                  <InputGroup.Text id="inputGroup-sizing-default">
-                    Nazwij jakoś ten plik
-                  </InputGroup.Text>
-                  <FormControl
-                    aria-label="Default"
-                    aria-describedby="inputGroup-sizing-default"
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                  <InputGroup.Text id="inputGroup-sizing-default">
-                    Opis (opcjonalne)
-                  </InputGroup.Text>
-                  <FormControl
-                    aria-label="Default"
-                    aria-describedby="inputGroup-sizing-default"
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </InputGroup>
-                <div className="error-message">{errorMessage}</div>
-                <div className="success-message">{successMessage}</div>
-                {file && userName && (
-                  <Button
-                    variant="primary"
-                    disabled={isLoading}
-                    onClick={!isLoading ? handleSubmit : null}
-                    type="submit"
-                  >
-                    {isLoading ? "Ładowanie…" : "Wyślij"}
-                  </Button>
-                )}
               </Card>
-            </Form>
-          </Col>
-        </Row>
-      </Container>
-    </>
-  );
-};
+            </Col>
+
+            <Col lg={10}>
+              <Form onSubmit={this.handleSubmit}>
+                <Card style={{ width: "100%", height: "100%" }}>
+                  <Card.Body>
+                    Wybierz plik, którym chcesz się podzielić
+                    <div className="custom-file-input">
+                      <label
+                        className="custom-file-upload"
+                        htmlFor="file-upload"
+                      >
+                        Wybierz plik
+                      </label>
+                      <input
+                        type="file"
+                        id="file-upload"
+                        onChange={this.handleChange}
+                      />
+                      <div id="custom-file-filename">{this.state.filename}</div>
+                    </div>
+                  </Card.Body>
+                  <InputGroup className="mb-3">
+                    <InputGroup.Text id="inputGroup-sizing-default">
+                      Nazwij jakoś ten plik
+                    </InputGroup.Text>
+                    <FormControl
+                      aria-label="Default"
+                      aria-describedby="inputGroup-sizing-default"
+                      onChange={(e) =>
+                        this.setState({ userName: e.target.value })
+                      }
+                    />
+                    <InputGroup.Text id="inputGroup-sizing-default">
+                      Opis (opcjonalne)
+                    </InputGroup.Text>
+                    <FormControl
+                      aria-label="Default"
+                      aria-describedby="inputGroup-sizing-default"
+                      onChange={(e) =>
+                        this.setState({ description: e.target.value })
+                      }
+                    />
+                  </InputGroup>
+                  <div className="error-message">{this.state.errorMessage}</div>
+                  <div className="success-message">
+                    {this.state.successMessage}
+                  </div>
+                  {this.state.file && this.state.userName && (
+                    <Button
+                      variant="primary"
+                      disabled={this.state.isLoading}
+                      onClick={
+                        !this.state.isLoading ? this.handleSubmit : undefined
+                      }
+                    >
+                      {this.state.isLoading ? "Ładowanie…" : "Wyślij"}
+                    </Button>
+                  )}
+                </Card>
+              </Form>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Link to="/myfiles" className="link-decoration-none">
+                <div className="navbar-button">Zarządzaj swoimi plikami</div>
+              </Link>
+            </Col>
+          </Row>
+        </Container>
+      </>
+    );
+  }
+}
 
 export default Profile;

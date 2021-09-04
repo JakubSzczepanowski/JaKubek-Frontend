@@ -12,6 +12,8 @@ import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 import FilesList from "./components/FilesList";
 import Logout from "./components/Logout";
+import UserFiles from "./components/UserFiles";
+import EditFile from "./components/EditFile";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
@@ -23,7 +25,7 @@ function App() {
   useEffect(() => {
     console.log('useEffect')
     checkAuthentication();
-  },[]);
+  },[isAuthenticated]);
 
   async function checkAuthentication() {
     await fetch("https://localhost:5001/api/account/user", {
@@ -66,6 +68,7 @@ function App() {
         <UnauthenticatedRoute path="/register" component={RegisterForm} appProps={{isAuthenticated}} />
         <UnauthenticatedRoute path="/login" component={LoginForm} appProps={{isAuthenticated, setIsAuthenticated}}/>
         <AuthenticatedRoute path="/profile" component={Profile} appProps={{ isAuthenticated,name,role }}/>
+        <AuthenticatedRoute path="/myfiles" component={UserFiles} appProps={{ isAuthenticated, name }}/>
         <Route path="/logout">
           <Logout setMode={setIsAuthenticated} setName={setName} setRole={setRole}/>
         </Route>

@@ -6,7 +6,6 @@ export default function AuthenticatedRoute({
   appProps,
   ...rest
 }) {
-  console.log("Profile Route");
   return (
     <Route
       {...rest}
