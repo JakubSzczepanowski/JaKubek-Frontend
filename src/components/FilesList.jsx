@@ -1,12 +1,26 @@
 import React from "react";
 import reactDom from "react-dom";
-import { Row, Card, Container, Button } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Container,
+  Button,
+  InputGroup,
+  Form,
+  Pagination,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class FilesList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { files: [], errorMessage: "" };
+    this.state = {
+      files: [],
+      errorMessage: "",
+      Query: { searchPhrase: "", pageNumber: 1, pageSize: 5 },
+      totalPages: 0,
+    };
   }
 
   componentDidMount() {
@@ -14,7 +28,10 @@ class FilesList extends React.Component {
   }
 
   GetFiles() {
-    fetch("https://localhost:5001/api/file", { credentials: "include" })
+    fetch(
+      `https://localhost:5001/api/file?searchPhrase=${this.state.Query.searchPhrase}&pageNumber=${this.state.Query.pageNumber}&pageSize=${this.state.Query.pageSize}`,
+      { credentials: "include" }
+    )
       .then(async (response) => {
         if (response.ok) {
           return response.json();
@@ -25,7 +42,9 @@ class FilesList extends React.Component {
         }
         throw new Error("Coś poszło nie tak");
       })
-      .then((data) => this.setState({ files: data }))
+      .then((data) =>
+        this.setState({ files: data.items, totalPages: data.totalPages })
+      )
       .catch((error) => {
         this.setState({ errorMessage: error.message });
       });
@@ -49,9 +68,82 @@ class FilesList extends React.Component {
       });
   }
 
+  handlePageChange = async (newActivePage) => {
+    await this.setState({
+      Query: { ...this.state.Query, pageNumber: newActivePage },
+    });
+    this.GetFiles();
+  };
+
+  handlePageSizeChange = async (newPageSize) => {
+    await this.setState({
+      Query: { ...this.state.Query, pageSize: newPageSize },
+    });
+    this.GetFiles();
+  };
+
+  handleSearch = async () => {
+    this.GetFiles();
+  };
+
+  renderPagination = () => {
+    let items = [];
+    if (this.state.totalPages <= 5) {
+      for (let number = 1; number <= this.state.totalPages; number++) {
+        items.push(
+          <Pagination.Item
+            key={number}
+            active={number === this.state.Query.pageNumber}
+            onClick={() => this.handlePageChange(number)}
+          >
+            {number}
+          </Pagination.Item>
+        );
+      }
+    } else {
+      for (let number = 1; number <= 5; number++) {
+        items.push(
+          <Pagination.Item
+            key={number}
+            active={number === this.state.Query.pageNumber}
+            onClick={() => this.handlePageChange(number)}
+          >
+            {number}
+          </Pagination.Item>
+        );
+        items.push(<Pagination.Ellipsis disabled />);
+        items.push(
+          <Pagination.Item
+            key={this.state.totalPages}
+            active={this.state.Query.pageNumber === this.state.Query.pageNumber}
+            onClick={() => this.handlePageChange(this.state.totalPages)}
+          >
+            {this.state.totalPages}
+          </Pagination.Item>
+        );
+      }
+    }
+    return items;
+  };
+
   render() {
     return (
       <Container>
+        <Row className="search-bar welcome-margin">
+          <InputGroup>
+            <Form.Control
+              placeholder="Wpisz frazę..."
+              onChange={(e) =>
+                this.setState({
+                  Query: { ...this.state.Query, searchPhrase: e.target.value },
+                })
+              }
+            ></Form.Control>
+            <Button variant="primary" onClick={this.handleSearch}>
+              Szukaj
+            </Button>
+          </InputGroup>
+        </Row>
         {this.state.files.map((file) => (
           <Row key={file.id} className="welcome-margin card-styling">
             <Card style={{ width: "80%" }}>
@@ -71,6 +163,33 @@ class FilesList extends React.Component {
             </Card>
           </Row>
         ))}
+        <Row className="welcome-margin">
+          <Col lg={10}>
+            <Pagination>{this.renderPagination()}</Pagination>
+          </Col>
+          <Col lg={2}>
+            <Pagination>
+              <Pagination.Item
+                active={5 === this.state.Query.pageSize}
+                onClick={() => this.handlePageSizeChange(5)}
+              >
+                5
+              </Pagination.Item>
+              <Pagination.Item
+                active={10 === this.state.Query.pageSize}
+                onClick={() => this.handlePageSizeChange(10)}
+              >
+                10
+              </Pagination.Item>
+              <Pagination.Item
+                active={15 === this.state.Query.pageSize}
+                onClick={() => this.handlePageSizeChange(15)}
+              >
+                15
+              </Pagination.Item>
+            </Pagination>
+          </Col>
+        </Row>
       </Container>
     );
   }

@@ -153,3 +153,13 @@ input[type="file"] {
 .big-margin {
   margin-left: 130px;
 }
+
+.search-bar {
+  width: 500px;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.sr-only {
+  display: none;
+}
