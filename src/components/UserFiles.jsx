@@ -10,6 +10,7 @@ import {
   InputGroup,
   Form,
   Col,
+  Dropdown,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
@@ -23,7 +24,13 @@ class UserFiles extends React.Component {
       errorMessage: "",
       isEditing: false,
       editComponent: null,
-      Query: { searchPhrase: "", pageNumber: 1, pageSize: 5 },
+      Query: {
+        searchPhrase: "",
+        pageNumber: 1,
+        pageSize: 5,
+        sortBy: "",
+        sortDirection: 0,
+      },
     };
   }
 
@@ -33,7 +40,7 @@ class UserFiles extends React.Component {
 
   GetUserFiles() {
     fetch(
-      `https://localhost:5001/api/file/userFiles?searchPhrase=${this.state.Query.searchPhrase}&pageNumber=${this.state.Query.pageNumber}&pageSize=${this.state.Query.pageSize}`,
+      `https://localhost:5001/api/file/userFiles?searchPhrase=${this.state.Query.searchPhrase}&pageNumber=${this.state.Query.pageNumber}&pageSize=${this.state.Query.pageSize}&sortBy=${this.state.Query.sortBy}&sortDirection=${this.state.Query.sortDirection}`,
       {
         credentials: "include",
       }
@@ -167,23 +174,106 @@ class UserFiles extends React.Component {
         <NavBar />
         {!this.state.isEditing ? (
           <Container>
-            <Row className="search-bar welcome-margin">
-              <InputGroup>
-                <Form.Control
-                  placeholder="Wpisz frazę..."
-                  onChange={(e) =>
-                    this.setState({
-                      Query: {
-                        ...this.state.Query,
-                        searchPhrase: e.target.value,
-                      },
-                    })
-                  }
-                ></Form.Control>
-                <Button variant="primary" onClick={this.handleSearch}>
-                  Szukaj
-                </Button>
-              </InputGroup>
+            <Row>
+              <Col md={2} className="welcome-margin">
+                <Dropdown>
+                  <Dropdown.Toggle
+                    id="dropdown-button-dark"
+                    variant="secondary"
+                  >
+                    Kierunek sortowania
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu variant="dark">
+                    <Dropdown.Item
+                      onClick={async () => {
+                        await this.setState({
+                          Query: { ...this.state.Query, sortDirection: 0 },
+                        });
+                        this.GetUserFiles();
+                      }}
+                      active={this.state.Query.sortDirection === 0}
+                    >
+                      Rosnąco
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={async () => {
+                        await this.setState({
+                          Query: { ...this.state.Query, sortDirection: 1 },
+                        });
+                        this.GetUserFiles();
+                      }}
+                      active={this.state.Query.sortDirection === 1}
+                    >
+                      Malejąco
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+              <Col md={2} className="welcome-margin">
+                <Dropdown>
+                  <Dropdown.Toggle
+                    id="dropdown-button-dark"
+                    variant="secondary"
+                  >
+                    Po czym sortować
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu variant="dark">
+                    <Dropdown.Item
+                      onClick={async () => {
+                        await this.setState({
+                          Query: { ...this.state.Query, sortBy: "" },
+                        });
+                        this.GetUserFiles();
+                      }}
+                      active={this.state.Query.sortBy === ""}
+                    >
+                      Bez sortowania
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={async () => {
+                        await this.setState({
+                          Query: { ...this.state.Query, sortBy: "Name" },
+                        });
+                        this.GetUserFiles();
+                      }}
+                      active={this.state.Query.sortBy === "Name"}
+                    >
+                      Nazwa
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={async () => {
+                        await this.setState({
+                          Query: { ...this.state.Query, sortBy: "Description" },
+                        });
+                        this.GetUserFiles();
+                      }}
+                      active={this.state.Query.sortBy === "Description"}
+                    >
+                      Opis
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+              <Col md={8} className="search-bar welcome-margin">
+                <InputGroup>
+                  <Form.Control
+                    placeholder="Wpisz frazę..."
+                    onChange={(e) =>
+                      this.setState({
+                        Query: {
+                          ...this.state.Query,
+                          searchPhrase: e.target.value,
+                        },
+                      })
+                    }
+                  ></Form.Control>
+                  <Button variant="primary" onClick={this.handleSearch}>
+                    Szukaj
+                  </Button>
+                </InputGroup>
+              </Col>
             </Row>
             {this.state.files.map((file) => (
               <Row key={file.id} className="welcome-margin card-styling">
