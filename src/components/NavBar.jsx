@@ -17,11 +17,6 @@ const NavBar = () => {
             <div className="navbar-button">Profil</div>
           </Link>
         </Col>
-        <Col>
-          <Link to="/chat" className="link-decoration-none">
-            <div className="navbar-button">Czat domowy</div>
-          </Link>
-        </Col>
       </Row>
     </Container>
   );
